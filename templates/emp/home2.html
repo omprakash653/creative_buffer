@@ -1,0 +1,136 @@
+{% extends 'emp/home.html' %} 
+{% block style%}
+.slist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .slist tr {
+    margin: 10px;
+    padding: 15px;
+    border: 1px solid #dfdfdf;
+    background: #f5f5f5;
+  }
+  
+  /* (B) DRAG-AND-DROP HINT */
+  .slist tr.hint {
+    border: 1px solid #ffc49a;
+    background: #feffb4;
+  }
+  .slist tr.active {
+    border: 1px solid #ffa5a5;
+    background: #ffe7e7;
+  }
+  {%endblock style%}
+{% block script %}
+function slist (target) {
+  // (A) SET CSS + GET ALL LIST ITEMS
+  target.classList.add("slist");
+  let items = target.getElementsByTagName("li"), current = null;
+
+  // (B) MAKE ITEMS DRAGGABLE + SORTABLE
+  for (let i of items) {
+    // (B1) ATTACH DRAGGABLE
+    i.draggable = true;
+    
+    // (B2) DRAG START - YELLOW HIGHLIGHT DROPZONES
+    i.ondragstart = e => {
+      current = i;
+      for (let it of items) {
+        if (it != current) { it.classList.add("hint"); }
+      }
+    };
+    
+    // (B3) DRAG ENTER - RED HIGHLIGHT DROPZONE
+    i.ondragenter = e => {
+      if (i != current) { i.classList.add("active"); }
+    };
+
+    // (B4) DRAG LEAVE - REMOVE RED HIGHLIGHT
+    i.ondragleave = () => i.classList.remove("active");
+
+    // (B5) DRAG END - REMOVE ALL HIGHLIGHTS
+    i.ondragend = () => { for (let it of items) {
+        it.classList.remove("hint");
+        it.classList.remove("active");
+    }};
+ 
+    // (B6) DRAG OVER - PREVENT THE DEFAULT "DROP", SO WE CAN DO OUR OWN
+    i.ondragover = e => e.preventDefault();
+ 
+    // (B7) ON DROP - DO SOMETHING
+    i.ondrop = e => {
+      e.preventDefault();
+      if (i != current) {
+        let currentpos = 0, droppedpos = 0;
+        for (let it=0; it<items.length; it++) {
+          if (current == items[it]) { currentpos = it; }
+          if (i == items[it]) { droppedpos = it; }
+        }
+        if (currentpos < droppedpos) {
+          i.parentNode.insertBefore(current, i.nextSibling);
+        } else {
+          i.parentNode.insertBefore(current, i);
+        }
+      }
+    };
+  }
+}
+
+{% endblock script %}
+{% block content %}
+
+<h1 class="text-center my-3">Employees Table</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-light table-striped table-hover">
+                        <thead>
+                            
+                            <tr>
+                                <th>S.NO.</th>
+                                <th>NAME</th>
+                                <th>ID</th>
+                                <th>PHONE</th>
+                                <th>WORKING STATUS</th>
+                                <th>DEPARTMENT</th>
+
+                                <th>ACTION</th>
+                            </tr>
+                            
+                        </thead>
+                        <tbody>
+                            {% for e in emps %}
+                            
+                            
+
+                            <tr draggable="true" id="sortlist">
+                                
+                                <td>{{forloop.counter}}</td>
+                                <td>{{e.name}}</td>
+                                <td>{{e.emp_id}}</td>
+                                <td>{{e.phone}}</td>
+                                <td>{{e.working}}</td>
+                                <td>{{e.department}}</td>
+
+                                <td>
+                                    <a href="/emp/delete-emp/{{e.id}}" class="btn btn-danger btn-sm">Delete</a>
+                                    <a href="/emp/update-emp/{{e.id}}" class="btn btn-success btn-sm">Update</a>
+                                </td>
+                                
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    slist(document.getElementById("sortlist"));
+  </script>
+{%endblock content%}

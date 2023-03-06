@@ -1,0 +1,25 @@
+{% extends 'emp/home.html' %}
+
+{% block content %}
+<h1 style="text-align:center;">LogIn Here</h1>
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-sm-5" style="margin-left:50px">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">User Name</label>
+                <input type="text" class="form-control" Name="username" id="exampleFormControlInput1"
+                    placeholder="username">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Password</label>
+                <input type="text" class="form-control" Name="password" id="exampleFormControlTextarea1"
+                    placeholder="Qgdh12@#43...">
+            </div>
+
+            <button value="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
